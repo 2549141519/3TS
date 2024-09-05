@@ -30,7 +30,8 @@ jobs:
         docker run -d --name 3ts_container $IMAGE_ID tail -f /dev/null
 
     - name: Install gflags inside Docker
-      run: docker exec -i 3ts_container apt-get update && apt-get install -y libgflags-dev
+      run: |
+        docker exec -i 3ts_container bash -c "apt-get update && apt-get install -y libgflags-dev"
 
     - name: Compile inside Docker
       run: |
