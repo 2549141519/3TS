@@ -31,8 +31,13 @@ jobs:
 
     - name: Compile inside Docker
       run: |
-        docker exec -it 3ts_container cmake -S /3TS/src/dbtest
-        docker exec -it 3ts_container make -C /3TS/src/dbtest
+        echo "Running CMake in Docker..."
+        docker exec -it 3ts_container cmake -S /src/dbtest
+        echo "Running Make in Docker..."
+        docker exec -it 3ts_container make -C /src/dbtest
+
+    - name: Clean up Docker container
+      run: docker rm -f 3ts_container
 
   compile_without_docker:
     runs-on: ubuntu-latest
@@ -41,11 +46,15 @@ jobs:
     - uses: actions/checkout@v2
 
     - name: Set up build environment
-      run: sudo apt-get update && sudo apt-get install -y cmake make g++
+      run: |
+        echo "Setting up build environment..."
+        sudo apt-get update && sudo apt-get install -y cmake make g++
+        echo "Build environment setup complete."
 
     - name: Compile using CMake
       run: |
+        echo "Compiling using CMake..."
         cd src/dbtest
         cmake -S ./
         make
-
+        echo "Compilation finished."
