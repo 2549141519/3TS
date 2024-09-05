@@ -45,7 +45,7 @@ jobs:
 
     - name: Compile using CMake
       run: |
-        cd 3TS/src/dbtest
+        cd src/dbtest
         cmake -S ./
         make
 
