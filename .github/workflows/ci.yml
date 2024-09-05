@@ -15,40 +15,53 @@ jobs:
     steps:
     - uses: actions/checkout@v2
 
+    # 设置构建环境
     - name: Set up build environment
       run: |
         echo "Setting up build environment..."
-        sudo apt-get update && sudo apt-get install -y cmake make g++ libgflags-dev unixodbc-dev odbcinst odbcinst1debian2
+        sudo apt-get update && sudo apt-get install -y cmake make g++ libgflags-dev unixodbc unixodbc-dev odbcinst odbcinst1debian2
         echo "Build environment setup complete."
 
+    # 安装 Docker
     - name: Install Docker
       run: curl -s https://get.docker.com/ | sh
 
+    # 拉取 Docker 镜像
     - name: Pull Docker image
       run: docker pull registry.cn-hangzhou.aliyuncs.com/open_projects/3ts_coo:1.0
 
+    # 列出 Docker 镜像
     - name: List Docker images
       run: docker images
 
+    # 运行 Docker 容器，并挂载项目目录
     - name: Run Docker container with volume
       run: |
         IMAGE_ID=$(docker images -q registry.cn-hangzhou.aliyuncs.com/open_projects/3ts_coo:1.0)
         docker run -d --name 3ts_container -v ${{ github.workspace }}:/src $IMAGE_ID tail -f /dev/null
 
+    # 在 Docker 容器中安装依赖项
+    - name: Install dependencies inside Docker
+      run: |
+        docker exec -i 3ts_container bash -c "apt-get update && apt-get install -y libgflags-dev unixodbc unixodbc-dev odbcinst odbcinst1debian2"
+
+    # 在 Docker 容器中编译
     - name: Compile inside Docker
       run: |
         echo "Running CMake in Docker..."
-        docker exec -i 3ts_container bash -c "cmake -DCMAKE_PREFIX_PATH=/usr/include -S /src/src/dbtest"
+        docker exec -i 3ts_container bash -c "cmake -DCMAKE_PREFIX_PATH=/usr/ -S /src/src/dbtest"
         echo "Running Make in Docker..."
         docker exec -i 3ts_container bash -c "make -C /src/src/dbtest"
 
+    # 清理 Docker 容器
     - name: Clean up Docker container
       run: docker rm -f 3ts_container
 
+    # 在非 Docker 环境中编译
     - name: Compile without Docker
       run: |
         echo "Compiling using CMake..."
         cd src/dbtest
-        cmake -DCMAKE_PREFIX_PATH=/usr/include -S ./
+        cmake -DCMAKE_PREFIX_PATH=/usr/ -S ./
         make
         echo "Compilation finished."
