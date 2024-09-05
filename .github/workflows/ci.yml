@@ -29,12 +29,15 @@ jobs:
         IMAGE_ID=$(docker images -q registry.cn-hangzhou.aliyuncs.com/open_projects/3ts_coo:1.0)
         docker run -d --name 3ts_container $IMAGE_ID /bin/bash
 
+    - name: Install gflags inside Docker
+      run: docker exec -i 3ts_container apt-get update && apt-get install -y libgflags-dev
+
     - name: Compile inside Docker
       run: |
         echo "Running CMake in Docker..."
-        docker exec -it 3ts_container cmake -S /src/dbtest
+        docker exec -i 3ts_container cmake -S /src/dbtest
         echo "Running Make in Docker..."
-        docker exec -it 3ts_container make -C /src/dbtest
+        docker exec -i 3ts_container make -C /src/dbtest
 
     - name: Clean up Docker container
       run: docker rm -f 3ts_container
@@ -48,7 +51,7 @@ jobs:
     - name: Set up build environment
       run: |
         echo "Setting up build environment..."
-        sudo apt-get update && sudo apt-get install -y cmake make g++
+        sudo apt-get update && sudo apt-get install -y cmake make g++ libgflags-dev
         echo "Build environment setup complete."
 
     - name: Compile using CMake
