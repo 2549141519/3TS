@@ -3,10 +3,10 @@ name: 3TS CI
 on:
   push:
     branches:
-      - main
+      - coo-consistency-check
   pull_request:
     branches:
-      - main
+      - coo-consistency-check
 
 jobs:
   compile_with_docker:
