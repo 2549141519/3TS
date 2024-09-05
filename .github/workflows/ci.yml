@@ -16,7 +16,7 @@ jobs:
     - uses: actions/checkout@v2
 
     - name: Install Docker
-      run: curl -s https://get.docker.com/ | sh
+      run: curl -fsSL https://get.docker.com/ | sh
 
     - name: Pull Docker image
       run: docker pull registry.cn-hangzhou.aliyuncs.com/open_projects/3ts_coo:1.0
@@ -29,14 +29,14 @@ jobs:
         IMAGE_ID=$(docker images -q registry.cn-hangzhou.aliyuncs.com/open_projects/3ts_coo:1.0)
         docker run -d --name 3ts_container -v ${{ github.workspace }}:/src $IMAGE_ID tail -f /dev/null
 
-    - name: Install gflags and ODBC inside Docker
+    - name: Install dependencies inside Docker
       run: |
         docker exec -i 3ts_container bash -c "apt-get update && apt-get install -y libgflags-dev unixodbc-dev cmake"
 
     - name: Compile inside Docker
       run: |
         echo "Running CMake in Docker..."
-        docker exec -i 3ts_container bash -c "cmake -DCMAKE_PREFIX_PATH=/usr/local -S /src/src/dbtest"
+        docker exec -i 3ts_container bash -c "cmake -S /src/src/dbtest"
         echo "Running Make in Docker..."
         docker exec -i 3ts_container bash -c "make -C /src/src/dbtest"
 
@@ -59,6 +59,6 @@ jobs:
       run: |
         echo "Compiling using CMake..."
         cd src/dbtest
-        cmake -DCMAKE_PREFIX_PATH=/usr/local -S ./
+        cmake -S ./
         make
         echo "Compilation finished."
