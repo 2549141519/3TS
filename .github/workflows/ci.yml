@@ -52,7 +52,7 @@ jobs:
       run: |
         echo "Compiling using CMake..."
         cd src/dbtest
-        rm -rf CMakeCache.txt CMakeFiles  # 清除缓存文件
+        sudo rm -rf CMakeCache.txt CMakeFiles  # 清除缓存文件
         cmake -S ./ || cmake -DCMAKE_PREFIX_PATH=/usr/ -S ./
         make
         echo "Compilation finished."
