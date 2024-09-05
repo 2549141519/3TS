@@ -27,12 +27,11 @@ jobs:
     - name: Run Docker container with volume
       run: |
         IMAGE_ID=$(docker images -q registry.cn-hangzhou.aliyuncs.com/open_projects/3ts_coo:1.0)
-        # 挂载项目根目录到容器的 /src 目录
         docker run -d --name 3ts_container -v ${{ github.workspace }}:/src $IMAGE_ID tail -f /dev/null
 
-    - name: Install gflags inside Docker
+    - name: Install gflags and ODBC inside Docker
       run: |
-        docker exec -i 3ts_container bash -c "apt-get update && apt-get install -y libgflags-dev"
+        docker exec -i 3ts_container bash -c "apt-get update && apt-get install -y libgflags-dev unixodbc-dev"
 
     - name: Compile inside Docker
       run: |
@@ -53,7 +52,7 @@ jobs:
     - name: Set up build environment
       run: |
         echo "Setting up build environment..."
-        sudo apt-get update && sudo apt-get install -y cmake make g++ libgflags-dev
+        sudo apt-get update && sudo apt-get install -y cmake make g++ libgflags-dev unixodbc-dev
         echo "Build environment setup complete."
 
     - name: Compile using CMake
