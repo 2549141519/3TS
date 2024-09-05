@@ -24,10 +24,11 @@ jobs:
     - name: List Docker images
       run: docker images
 
-    - name: Run Docker container
+    - name: Run Docker container with volume
       run: |
         IMAGE_ID=$(docker images -q registry.cn-hangzhou.aliyuncs.com/open_projects/3ts_coo:1.0)
-        docker run -d --name 3ts_container $IMAGE_ID tail -f /dev/null
+        # 挂载项目根目录到容器的 /src 目录
+        docker run -d --name 3ts_container -v ${{ github.workspace }}:/src $IMAGE_ID tail -f /dev/null
 
     - name: Install gflags inside Docker
       run: |
@@ -36,9 +37,9 @@ jobs:
     - name: Compile inside Docker
       run: |
         echo "Running CMake in Docker..."
-        docker exec -i 3ts_container cmake -S /src/dbtest
+        docker exec -i 3ts_container cmake -S /src/src/dbtest
         echo "Running Make in Docker..."
-        docker exec -i 3ts_container make -C /src/dbtest
+        docker exec -i 3ts_container make -C /src/src/dbtest
 
     - name: Clean up Docker container
       run: docker rm -f 3ts_container
