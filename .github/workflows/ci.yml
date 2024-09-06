@@ -3,10 +3,10 @@ name: 3TS CI
 on:
   push:
     branches:
-      - coo-consistency-check
+      - pr
   pull_request:
     branches:
-      - coo-consistency-check
+      - pr
 
 jobs:
   build_and_test:
