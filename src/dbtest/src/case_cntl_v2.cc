@@ -30,7 +30,7 @@ std::vector<std::string> CaseReader::TxnIdAndSql(const std::string& line) {
     std::vector<std::string> txn_id_and_sql;
     const auto index_first = line.find("-");
     const auto index_second = line.rfind("-");
-    if0 (!line.empty()) {
+    if (!line.empty()) {
         if (index_first != line.npos && index_second != line.npos) {
             txn_id_and_sql.push_back(line.substr(0, index_first));
             txn_id_and_sql.push_back(line.substr(index_first + 1, index_second - index_first - 1));
